@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- 解决mybatis中无效的列类型的异常 
+		 将null类型插入到数据库中时无效列类型，当然可以在每一次更改用户的时候只更改需要改动的部分，但这
+		 样就要写多个对应的Mapper接口中的方法
+	-->
+	<settings>
+		 <setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+	
+	<typeAliases>
+		<package name="com.chenheng.common.bean"/>
+	</typeAliases>
+</configuration>

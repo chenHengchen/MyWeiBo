@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chenheng.dao.IUserDao">
+	<select id="findUserByEmail" parameterType="String" resultType="User">
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from user_tab
+		where u_email=#{email}
+	</select>
+	<select id="findFJUser" parameterType="long" resultType="User">
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from user_tab
+		where u_id = #{id}
+		and
+		BAN_TIME <![CDATA[>]]> SYSDATE
+	</select>
+	<select id="findIntegral" parameterType="String" resultType="PointAction">
+		select i_id as id,i_operation as actionName,i_number as point,i_desc as description
+		from integral_tab
+		where i_operation=#{actionName}
+	</select>
+	<insert id="savePointRecord" parameterType="PointRecord">
+-- 		SelectKey在Mybatis中是为了解决Insert数据时不支持主键自动生成的问题，他可以很随意的设置生成主键的方式。
+		<selectKey keyProperty="id" resultType="Long" order="BEFORE">
+			select seq_record.nextval from dual
+		</selectKey>
+		insert
+		into record_tab(r_id,u_email,i_id,r_date)
+		values(#{id},#{email},#{action.id},#{recordDate})
+	</insert>
+	<insert id="saveUser" parameterType="User">
+		<selectKey keyProperty="id" resultType="Long" order="BEFORE">
+			select seq_user.nextval from dual
+		</selectKey>
+		insert
+		into user_tab(u_id,u_email,u_pwd,u_nickname,u_sex,pwd_question,pwd_answer,RegisterTime,integral,lastLogin,u_images)
+		values(#{id},#{email},#{password},#{nickName},#{sex},#{pwdQuestion},#{pwdAnswer},#{registerTime},#{integral},#{lastLogin},#{images})
+	</insert>
+	<select id="findUserByEmailAndPassword" resultType="User">
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday ,to_char(BAN_TIME,'yyyy-mm-dd hh24:mi:ss') as banTime
+		from user_tab
+		where u_email=#{param1}
+		and
+		u_pwd=#{param2}
+	</select>
+	<select id="findUserByNickName" resultType="User">
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday ,to_char(BAN_TIME,'yyyy-mm-dd hh24:mi:ss') as banTime
+		from user_tab
+		where nickName=#{param1}
+	</select>
+	<update id="updateUser" parameterType="User">
+		update 
+		user_tab
+		set
+		u_nickname=#{nickName},u_pwd=#{password},u_name=#{name},u_sex=#{sex},u_position=#{position},u_images=#{images},u_sign=#{sign},registerTime=#{registerTime},pwd_question=#{pwdQuestion},pwd_answer=#{pwdAnswer},
+		lastlogin=#{lastLogin},integral=#{integral},conch_integral=#{conchIntegral},A_number=#{attention},F_number=#{fans},co_number=#{collect},blog_number=#{blogNumber},u_birthday=#{birthday}
+		where
+		u_email=#{email}
+	</update>
+	<select id="findUserById" parameterType="long" resultType="User">
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from user_tab
+		where u_id=#{id}
+	</select>
+	<update id="updateUserForNum" parameterType="User">
+		update
+		user_tab
+		set A_number=#{attention},F_number=#{fans},co_number=#{collect},blog_number=#{blogNumber}
+		where
+		u_id = #{id}		
+	</update>
+	<insert id="saveConch" parameterType="Conch">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select seq_weibo.nextval from dual
+		</selectKey>
+		insert
+		into conch_tab(id,userId,cNumber,conchBody,conchTime)
+		values(#{id},#{userId},#{cNumber},#{conchBody},SYSDATE)
+	</insert>
+	<select id="findConchByNews" resultType="Conch">
+		SELECT id,
+			userId,
+			cNumber,
+			conchBody,
+			adoptId,
+			state,
+			to_char(conchTime,'yyyy-mm-dd hh24:mi:ss') as conchTime
+		 FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM conch_tab ORDER BY conchTime DESC) A 
+				WHERE ROWNUM <![CDATA[<=]]> #{param2}
+			)
+		WHERE RN <![CDATA[>=]]> #{param1}
+	</select>
+	<select id="findConchByNewsNum" resultType="int">
+		select count(1)
+		from conch_tab
+	</select>
+	<select id="findConchByState" resultType="Conch">
+		SELECT id,
+			userId,
+			cNumber,
+			conchBody,
+			adoptId,
+			state,
+			to_char(conchTime,'yyyy-mm-dd hh24:mi:ss') as conchTime
+		 FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM conch_tab 
+					where state = #{param1}
+					order by conchTime DESC) A 
+				WHERE ROWNUM <![CDATA[<=]]> #{param3}
+			)
+		WHERE RN <![CDATA[>=]]> #{param2}
+	</select>
+	<select id="findConchByStateNum" resultType="int" parameterType="int">
+		select count(1)
+		from conch_tab
+		where state = #{state}
+	</select>
+	<select id="findConchByMe" resultType="Conch">
+		SELECT id,
+			userId,
+			cNumber,
+			conchBody,
+			adoptId,
+			state,
+			to_char(conchTime,'yyyy-mm-dd hh24:mi:ss') as conchTime
+		 FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM conch_tab 
+					where userId = #{param1}
+					order by conchTime DESC) A 
+				WHERE ROWNUM <![CDATA[<=]]> #{param3}
+			)
+		WHERE RN <![CDATA[>=]]> #{param2}
+	</select>
+	<select id="findConchByMeNum" parameterType="long" resultType="int">
+		select count(1)
+		from conch_tab
+		where userId = #{id}
+	</select>
+	<select id="findConchById" parameterType="long" resultType="Conch">
+		SELECT id,
+			userId,
+			cNumber,
+			conchBody,
+			adoptId,
+			state,
+			to_char(conchTime,'yyyy-mm-dd hh24:mi:ss') as conchTime
+		 FROM conch_tab
+		 where id = #{id}
+	</select>
+	<update id="setConchState" parameterType="long">
+		update conch_tab
+		set state = 1
+		where id = #{id}
+	</update>
+	<update id="setConchComm" parameterType="long">
+		update comm_tab
+		set c_state = 101
+		where c_id = #{id}
+	</update>
+	<select id="findUserIdByCommId" parameterType="long" resultType="long">
+		select comment_id
+		from comm_tab
+		where c_id = #{id}
+	</select>
+	<update id="saveConchIntegral" parameterType="User">
+	</update>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>weibo</display-name>
+  <welcome-file-list>
+    <welcome-file>register_index.jsp</welcome-file>
+  </welcome-file-list>
+ <!-- 配置编码转换过滤器 -->
+	<!-- 配置过滤器，解决post的乱码问题 -->
+	 <filter>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>CharacterEncodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<!-- spring的配置文件-->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring/bean.xml</param-value>
+	</context-param>
+	<!-- 配置监听器加载spring -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+ <!-- 配置前端控制器 --> 
+  <servlet>
+  	<servlet-name>SpringMVC</servlet-name>
+  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  	<init-param>
+  		<param-name>contextConfigLocation</param-name>
+  		<param-value>classpath:spring/spring-web-mvc.xml</param-value>
+  	</init-param>
+  	<load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>SpringMVC</servlet-name>
+	  <!-- 匹配所有的请求 -->
+	  <!-- 不拦截jsp，但是拦截js,css,fonts -->
+	<url-pattern>/</url-pattern>
+  </servlet-mapping>
+ 
+ <!-- 验证码 -->
+  <servlet>
+    <servlet-name>authImg</servlet-name>
+    <servlet-class>com.chenheng.web.servlet.AuthImg</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>authImg</servlet-name>
+    <url-pattern>/authImg.do</url-pattern>
+  </servlet-mapping>
+
+</web-app>

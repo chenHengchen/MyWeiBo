@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+	<!-- mvc命名空间，用来支持对于mvc的配置，自动注册基于注解风格的处理器和适配器，在spring4中还支持各种数据的转换器 -->
+	<mvc:annotation-driven/>
+	<!-- 自动检测控制器组件 -->
+	<context:component-scan base-package="com.chenheng.web.controller"/>
+	<!-- 逻辑静态资源路径到物理静态资源的路径 -->
+	<!--“/”其实能拦截“.js”，“.css”，".png"等静态资源的访问，
+	因此如果采用“/”的配置时，需要在主配置文件中配置放行静态资源（即DispatcherServlet对应的配置文件），
+	这样才不会出现意想不到的匹配错误404.-->
+	<!--<mvc:resources mapping="/style/**" location="/WEB-INF/jsp/style/"/>-->
+	<mvc:resources mapping="/js/**" location="/WEB-INF/jsp/js/"/>
+	<mvc:resources mapping="/images/**" location="/WEB-INF/jsp/images/"/> 
+	<mvc:resources mapping="/gif/**" location="/WEB-INF/jsp/gif/"/> 
+	<mvc:resources mapping="/css/**" location="/WEB-INF/jsp/css/"/> 
+	<mvc:resources mapping="/img/**" location="/WEB-INF/jsp/img/"/> 
+	<mvc:resources mapping="/face/**" location="/WEB-INF/jsp/face/"/> 
+	<mvc:resources mapping="/icon/**" location="/WEB-INF/jsp/icon/"/> 
+	<mvc:resources mapping="/upload/pic/**" location="/WEB-INF/jsp/upload/pic/"/> 
+	<mvc:resources mapping="/script/**" location="/WEB-INF/jsp/script/"/> 
+	<mvc:resources mapping="/**.do" location="/com/chenheng/web/servlet/"/>
+
+	<!-- 解决静态资源无法被springMVC处理的问题
+	备注：两种方式选择一种即可。
+	-->
+	<!--<mvc:default-servlet-handler/>-->
+	
+	<!-- 视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">  
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>  
+		<property name="prefix" value="/WEB-INF/jsp/"/>  
+		<property name="suffix" value=".jsp"/>
+  	</bean>
+  	<!-- 文件上传 -->
+  	<bean name="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"> 
+	    <property name="defaultEncoding" value="UTF-8"/> 
+	    <!-- 指定所上传文件的总大小不能超过指定字节大小 --> 
+	    <property name="maxUploadSize" value="2000000000"/>
+	</bean>
+</beans>

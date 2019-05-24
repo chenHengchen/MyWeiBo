@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.2.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+	<!-- 自动扫描组件 -->
+	<context:annotation-config />
+	<context:component-scan base-package="com.chenheng.service"/>
+
+	<!-- 配置 读取properties文件 jdbc.properties -->
+	<!--<context:property-placeholder location="classpath:db.properties" />-->
+
+	<!-- 配置 数据源 -->
+	<!-- 数据源 -->
+	<bean id="dataSource"
+		  class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName">
+			<value>oracle.jdbc.driver.OracleDriver</value>
+		</property>
+		<property name="url">
+			<value>jdbc:oracle:thin:@192.168.151.129:1521:ORCL</value>
+		</property>
+		<property name="username">
+			<value>scott</value>
+		</property>
+		<property name="password">
+			<value>tiger</value>
+		</property>
+		<!-- 最大连接数 -->
+		<property name="maxActive">
+			<value>80</value>
+		</property>
+		<!-- 最大空闲连接数 -->
+		<property name="maxIdle">
+			<value>20</value>
+		</property>
+		<!-- 最大等待时间:当没有可用连接时,连接池等待连接被归还的最大时间 单位:毫秒 -->
+		<!-- 超过时间则抛出异常,如果设置为-1表示无限等待 -->
+		<property name="maxWait">
+			<value>3000</value>
+		</property>
+	</bean>
+    <!-- 配置sqlsessionFactory -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 设置MyBatis核心配置文件 -->
+		<property  name="configLocation"  value="classpath:mybatis/mybatis-config.xml"/>
+      <property name="dataSource" ref="dataSource" />
+		<!-- 扫描sql配置文件:mapper需要的xml文件 -->
+		<property name="mapperLocations" value="classpath:mapper/*.xml"/>
+     </bean>
+
+	<!-- 配置Mapper扫描 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 注入SqlSessionFactory -->
+		<property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+		<!-- 设置Mapper扫描包 -->
+        <property name="basePackage" value="com.chenheng.dao"></property>
+    </bean>
+     
+<!-- 事务 -->
+    <context:annotation-config />
+
+	<!-- 配置事务处理的切面类 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<!-- 配置基于注解的声明式事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!--&lt;!&ndash; 配置目标对象 &ndash;&gt;
+	<bean name="userService" class="com.chenheng.service.impl.IUserServiceImpl"></bean>
+	<bean name="weiboService" class="com.chenheng.service.impl.IWeiboServiceImpl"></bean>
+	<bean name="friendService" class="com.chenheng.service.impl.IFriendServiceImpl"></bean>
+	<bean name="adminService" class="com.chenheng.service.impl.IAdminServiceImpl"></bean>
+	
+
+	
+	&lt;!&ndash; 配置advice &ndash;&gt;
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+		&lt;!&ndash; 配置在那些方法上面加上那些事务属性，以及抛出什么样的异常的时候回滚 &ndash;&gt;
+			<tx:method name="save*" propagation="REQUIRED"/>
+			<tx:method name="register*" propagation="REQUIRED" rollback-for="Throwable"/>
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Throwable"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		&lt;!&ndash; 配置切入点 &ndash;&gt;
+		<aop:pointcut expression="execution(public * com.chenheng.service.*.*(..))" id="pointCut1"/>
+		&lt;!&ndash; 配置advice在那些切入点上起作用 &ndash;&gt;
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointCut1"/>
+	</aop:config>-->
+</beans>

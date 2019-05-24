@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chenheng.dao.IWeiboDao">
+	<insert id="publishWeibo" parameterType="Weibo">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select seq_weibo.nextval from dual
+		</selectKey>
+		insert 
+		into weibo_tab(m_id,u_id,m_date,m_body,m_image)
+		values(#{id},#{user.id},SYSDATE,#{body},#{image})
+	</insert>
+	<select id="findWeiboByUserId" resultType="Weibo">
+		<![CDATA[ 
+		SELECT u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM weibo_tab where u_id=#{param1} and m_state = 0 order by m_date desc) A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>	
+	</select>
+	<select id="findUserByTuijian" parameterType="long" resultType="User">
+		<![CDATA[ 
+		select u_id as id,u_email as email,u_nickname as nickName,u_sex as sex,u_position as position,u_images as images,u_sign as sign
+		from (select u_id,u_email,u_nickname,u_sex,u_position,u_images,u_sign from user_tab ORDER BY sys_guid()) 
+		where rownum <= 10
+		and 
+		u_id <> #{id}
+		and
+		u_id not in(select f_atten from friend_tab where u_id=#{id})
+		]]>
+	</select>
+	<insert id="attUser" >
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select seq_friend.nextval from dual
+		</selectKey>
+		insert
+		into friend_tab(f_id,u_id,f_atten)
+		values(#{id},#{param1},#{param2})	
+	</insert>
+	<delete id="canUser">
+		delete
+		from friend_tab
+		where 
+		u_id=#{param1}
+		and
+		f_atten=#{param2}
+	</delete>
+	<!-- <select id="findRelation" resultType="long">
+		select f_id
+		from friend_tab
+		where u_id=#{param1}
+		and
+		f_atten=#{param2}
+	</select> -->
+
+	<select id="findWeiboNumber" parameterType="long" resultType="int">
+		select count(*)
+		from weibo_tab
+		where u_id=#{id}
+		and
+		m_state = 0
+	</select>
+	
+	<select id="findWeiboNumberAsTransOrMe" resultType="int">
+		select count(*)
+		from weibo_tab
+		where u_id=#{param1}
+		and
+		m_state = 0
+		and
+		m_t_state = #{param2}
+	</select>
+	
+<!-- 	SELECT * FROM 
+		(
+			SELECT A.*, ROWNUM RN 
+			FROM (SELECT * FROM weibo_tab where u_id=1 order by m_date desc) A 
+			WHERE ROWNUM <= 10
+		)
+	WHERE RN >= 0 -->
+	<select id="paging" resultType="Weibo">
+		<![CDATA[
+		SELECT u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM weibo_tab where u_id=#{param1} and m_state = 0 order by m_date desc) A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>
+	</select>
+	<select id="pagingAsTransOrMe" resultType="Weibo">
+		<![CDATA[
+		SELECT u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM weibo_tab where u_id=#{param1} and m_state = 0 and m_t_state=#{param4} order by m_date desc) A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>	
+	</select>
+	
+	<select id="findweiboLike" resultType="WeiboLike">
+		select like_id as id,weibo_id as weiboId,like_user_id as likeUserId,be_like_id as beLikeId,like_date as likeDate
+		from like_tab
+		where weibo_id=#{param1}
+		and
+		like_user_id = #{param2}
+	</select>
+	
+	<insert id="likeWeibo" parameterType="WeiboLike">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select seq_like.nextval from dual
+		</selectKey>
+		insert
+		into like_tab(like_id,weibo_id,like_user_id,be_like_id,like_date)
+		values(#{id},#{weiboId},#{likeUserId},#{beLikeId},#{likeDate})
+	</insert>
+	
+	<delete id="disLikeWeibo" parameterType="WeiboLike">
+		delete
+		from like_tab
+		where weibo_id=#{weiboId}
+		and
+		like_user_id = #{likeUserId}
+	</delete>
+	<select id="findUserIdbyWId" parameterType="long" resultType="long">
+		select u_id
+		from weibo_tab
+		where m_id=#{wId}
+	</select>
+	
+	<select id="findWeiboLikeNumber" parameterType="long" resultType="int">
+		select count(*)
+		from like_tab
+		where weibo_id=#{wId}
+	</select>
+	
+	<select id="findWeiboBywId" parameterType="long" resultType="Weibo">
+		select u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime
+		from weibo_tab
+		where m_id = #{wId}
+	</select>
+	
+	<update id="updateWeibo" parameterType="Weibo">
+		update 
+		weibo_tab
+		set
+		m_tranum = #{tranum},
+		m_comnum = #{comnum},
+		m_colnum = #{colnum},
+		m_like = #{likeN}
+		where m_id = #{id}
+		
+	</update>
+	
+	<select id="findWeibotransNumber" parameterType="long" resultType="int">
+		select count(*)
+		from trans_tab
+		where m_id = #{id}
+	</select>
+	
+	<insert id="saveTrans" parameterType="WeiboTrans">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select seq_trans.nextval from dual
+		</selectKey>
+		insert 
+		into trans_tab(t_id,m_id,trans_user_id,be_trans_user_id,trans_date)
+		values(#{id},#{weiboId},#{transUserId},#{beTransUserId},#{transDate})
+	</insert>
+
+	<insert id="saveWeiboComm" parameterType="WeiboComm">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select seq_comm.nextval from dual
+		</selectKey>
+		insert 
+		into comm_tab(c_id,m_id,comment_id,be_comment_id,c_date,c_body,c_state,c_like)
+		values(#{id},#{weiboId},#{commentId},#{beCommentId},SYSDATE,#{commentBody},#{commentState},#{commentLike})
+	</insert>
+
+	<select id="findCommNum" parameterType="long" resultType="int">
+		select count(*)
+		from comm_tab
+		where
+		m_id = #{id}
+	</select>
+	
+	<select id="findWeiboComm" parameterType="long" resultType="WeiboComm">
+		<![CDATA[ 
+		select c_id as id,m_id as weiboId,comment_id as commentId,be_comment_id as beCommentId,to_char(c_date,'yyyy-mm-dd hh24:mi:ss') as commentDate,c_body as commentBody,c_state as commentState,c_like as commentLike
+		from (select A.*, ROWNUM RN from(
+				select * from comm_tab 
+				where m_id = #{param1}
+				ORDER BY c_like DESC) A
+				where rownum<=#{param3}
+			 )
+		where RN >=#{param2}
+		]]>
+	</select>
+	
+	<update id="deleteWeibo" parameterType="long">
+		UPDATE 
+		WEIBO_TAB
+		SET
+		M_STATE = 1
+		WHERE
+		M_ID = #{id}
+	</update>
+	
+	<delete id="clearWeibo" parameterType="long">
+		DELETE
+		FROM WEIBO_TAB
+		WHERE
+		M_ID = #{id}
+	</delete>
+	
+	<update id="recoverDeleteWeibo" parameterType="long">
+		UPDATE 
+		WEIBO_TAB
+		SET
+		M_STATE = 0
+		WHERE
+		M_ID = #{id}
+	</update>
+	
+	<select id="findWeiboOfHome" resultType="Weibo">
+		<![CDATA[
+		SELECT u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN ,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT M_ID,U_ID,M_TRANUM,M_COMNUM,M_COLNUM,M_LIKE,M_DATE,M_BODY,M_IMAGE,M_STATE,M_TAG,M_LIKE+M_TRANUM+m_comnum+m_colnum as m FROM weibo_tab where m_state=#{param1} order by m desc) A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>
+	</select>
+	
+	<insert id="weiboCollect" parameterType="WeiboCollect">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select seq_collect.nextval from dual
+		</selectKey>
+		insert
+		into collect_tab(c_id,m_id,collect_user_id,be_collect_id,collect_date)
+		values(#{id},#{weibo.id},#{collectUserId},#{weibo.u_id},SYSDATE)
+	</insert>
+	
+	<select id="findCollectWeibo" resultType="Weibo">
+		<![CDATA[
+		SELECT u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM weibo_tab where m_id in(
+						select distinct m_id from collect_tab where collect_user_id=#{param1}
+					) and m_state = 0 order by m_date desc) A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>
+	</select>
+	
+	<select id="findCollectWeiboNum" parameterType="long" resultType="int">
+		select count(*) 
+		from(	
+			select distinct m_id from collect_tab where collect_user_id=#{id}
+			)
+	</select>
+	
+	<select id="findWeiboBySeach" resultType="Weibo"> 
+		<![CDATA[
+		SELECT u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM weibo_tab where 
+				m_body like '%${param1}%'
+				and m_state = 0 order by m_date desc) A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>
+	</select>
+	<select id="findUserBySeach" resultType="User">
+		<![CDATA[
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM user_tab where 
+				u_nickname like '%${param1}%'
+				) A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>
+	</select>
+	<select id="findWeiboBySeachNum" parameterType="String" resultType="int">
+		SELECT count(1)
+		FROM weibo_tab where 
+		m_body like #{key}
+	</select>
+	
+	<select id="findUserBySeachNum" parameterType="String" resultType="int">
+		SELECT count(1)
+		FROM user_tab where 
+		u_nickname like #{key}
+	</select>
+	<select id="findWeiboOfHomeNum" parameterType="int" resultType="int">
+		select count(1)
+		from weibo_tab
+		where m_state = #{state}
+	</select>
+</mapper>

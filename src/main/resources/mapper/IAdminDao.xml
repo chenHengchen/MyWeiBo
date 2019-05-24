@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chenheng.dao.IAdminDao">
+	<select id="findAdminUser" resultType="User">
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,
+		u_name as name,u_sex as sex,u_position as position,u_images as images,
+		u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention
+		,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from admin_user_tab
+		where u_name=#{param1}
+		and
+		u_pwd=#{param2}
+	</select>
+	<select id="finTargetNum" resultType="int">
+		select count(1)
+		from ${param1}
+		where ${param2}
+		and ${param3}
+		between Trunc(add_months(sysdate,-0), 'MONTH')
+		and 
+		LAST_DAY(Trunc(add_months(sysdate,-0), 'MONTH'))
+	</select>
+	<select id="findAllUserNum" resultType="int">
+		select count(1)
+		from user_tab
+	</select>
+	<select id="findAllConchNum" resultType="int">
+		select count(1)
+		from conch_tab
+	</select>
+	<select id="findAllCommNum" resultType="int">
+		select count(1)
+		from comm_tab
+		where c_state = 1
+	</select>
+	<select id="findAllAnwerNum" resultType="int">
+		select count(1)
+		from comm_tab
+		where c_state = 100
+		or
+		c_state = 101
+	</select>
+	<select id="findAllWeiboNum" resultType="int">
+		select count(1)
+		from weibo_tab
+	</select>
+	<select id="findWeek" parameterType="int" resultType="String">
+		select to_char(sysdate-#{i}, 'dy') from dual
+	</select>
+	<select id="finWeiboOrConchDay" resultType="int">
+		select count(1)
+		from ${param1}
+		where trunc(${param2})=trunc(sysdate-${param3})
+	</select>
+	<select id="findAllUser" resultType="User">
+		<![CDATA[
+		SELECT u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,to_char(registerTime,'yyyy-mm-dd hh24:mi:ss') as pwdQuestion,
+		to_char(lastlogin,'yyyy-mm-dd hh24:mi:ss') as pwdAnswer,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday,u_state as state,to_char(ban_time,'yyyy-mm-dd hh24:hh') as banTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM user_tab) A 
+				WHERE ROWNUM <= #{param2}
+			)
+		WHERE RN >= #{param1}
+		]]>
+	</select>
+	<update id="FJUserByDay">
+		update user_tab
+		set u_state = 1,ban_time = SYSDATE+#{param2}
+		where u_id = #{param1}
+	</update>
+	<update id="JFUser" parameterType="long">
+		update user_tab
+		set u_state = 0,ban_time = null
+		where u_id = #{id}
+	</update>
+	<select id="findAllUserByKey" resultType="User">
+		<![CDATA[
+		SELECT u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,to_char(registerTime,'yyyy-mm-dd hh24:mi:ss') as pwdQuestion,
+		to_char(lastlogin,'yyyy-mm-dd hh24:mi:ss') as pwdAnswer,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday,u_state as state,to_char(ban_time,'yyyy-mm-dd hh24:hh') as banTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM user_tab where u_nickname like '%${param1}%') A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>
+	</select>
+	<select id="findAllUserNumByKey" parameterType="String" resultType="int">
+		select count(1)
+		from user_tab
+		where u_nickname like '%${_parameter}%'
+	</select>
+	<select id="findWeiboNumByKey" resultType="int" parameterType="String"> 
+		select count(1)
+		from weibo_tab
+		where m_body like '%${_parameter}%'
+	</select>
+	<select id="findWeiboByKey" resultType="Weibo">
+		<![CDATA[
+		SELECT u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime,m_state as state FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM weibo_tab where ${param1} order by m_id desc) A 
+				WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>
+	</select>
+	<update id="upWeiboWithState">
+		update weibo_tab
+		set m_state = #{param2}
+		where m_id = #{param1}
+	</update>		
+	<select id="findConchNumByKey" resultType="int" parameterType="String">
+		select count(1)
+		from conch_tab
+		where CONCHBODY like '%${_parameter}%'
+	</select>
+	<select id="findConchByKey" resultType="Conch">
+		SELECT id,
+			userId,
+			cNumber,
+			conchBody,
+			adoptId,
+			state,
+			to_char(conchTime,'yyyy-mm-dd hh24:mi:ss') as conchTime
+		 FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM conch_tab where ${param1} ORDER BY conchTime DESC) A 
+				WHERE ROWNUM <![CDATA[<=]]> #{param3}
+			)
+		WHERE RN <![CDATA[>=]]> #{param2}
+	</select>
+	<select id="findConchState" parameterType="long" resultType="int">
+		select state
+		from conch_tab
+		where id = #{id}
+	</select>
+	<update id="upConchState">
+		update conch_tab
+		set state = #{param2}
+		where id = #{param1}
+	</update>
+</mapper>

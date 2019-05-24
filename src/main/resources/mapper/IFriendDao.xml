@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chenheng.dao.IFriendDao">
+	<select id="findFriendWeibo" resultType="Weibo">
+		<![CDATA[
+		SELECT u_id,m_id as id,m_date as pubTime,m_body as body,m_image as image,m_tranum as tranum,
+		m_comnum as comnum,m_colnum as colnum,m_like as likeN ,to_char(m_date,'yyyy-mm-dd hh24:hh:mi') as str_pubTime FROM 
+			(
+				SELECT A.*, ROWNUM RN 
+				FROM (SELECT * FROM weibo_tab where u_id in (
+						select f_atten from friend_tab where u_id=#{param1} and state = 0
+					) order by m_date desc) A 
+					WHERE ROWNUM <= #{param3}
+			)
+		WHERE RN >= #{param2}
+		]]>
+	</select>
+	<select id="findWeiboNumber" parameterType="long" resultType="int">
+		select count(*)
+		from weibo_tab
+		where u_id in(
+			select f_atten from friend_tab where u_id=#{id} and state = 0
+			)
+	</select>
+	
+	<select id="findAttUser" resultType="User">
+		<![CDATA[
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from user_tab
+		where u_id in (
+			SELECT f_atten FROM
+				(
+					SELECT A.*, ROWNUM RN 
+					FROM (SELECT f_atten FROM friend_tab where u_id = #{param1} and state = 0) A 
+					WHERE ROWNUM <= #{param3}
+				)
+			WHERE RN >= #{param2}
+		)
+		]]>
+	</select>
+	
+	<select id="findAttNum" parameterType="long" resultType="int">
+		SELECT COUNT(*)
+		FROM friend_tab
+		WHERE u_id = #{id}
+		and state = 0
+	</select>
+	
+	<select id="findMessageById" resultType="Message">
+		select ID as id,
+			USER_A as userAId,
+			USER_B as userBId,
+			M_MESSAGE as message,
+			to_char(M_DATE,'yyyy-mm-dd hh24:hh:mi') as messageDate
+		from message_tab
+		where (
+			USER_A = #{param1}
+			and USER_B = #{param2})
+		or(
+			USER_A = #{param2}
+			and USER_B = #{param1})
+		and STATE <![CDATA[<>]]> 99
+		order by M_DATE ASC
+	</select>
+	
+	<insert id="sendMessage" parameterType="Message">
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">
+			select seq_weibo.nextval from dual
+		</selectKey>
+		insert 
+		into message_tab(ID,USER_A,USER_B,M_MESSAGE,M_DATE)
+		values(#{id},#{userAId},#{userBId},#{message},SYSDATE)
+	</insert>
+	<update id="setMessageRead">
+		update message_tab
+		set STATE = 1
+		where USER_A = #{param2}
+		and
+		USER_B = #{param1}
+	</update>
+	<update id="updateFriendToBlack">
+		update message_tab
+		set STATE = #{param3}
+		where user_a = #{param2}
+		and user_b = #{param1}
+	</update>
+	<update id="updateFriendState">
+		update friend_tab
+		set state = #{param3}
+		where u_id = #{param1}
+		and f_atten = #{param2} 
+	</update>
+	
+	<select id="findUnreadMNum" parameterType="long" resultType="int">
+		select count(1)
+		from message_tab
+		where 
+		USER_B = #{id}
+		and
+		STATE = 0
+	</select>
+	
+	<select id="findUserByMessage" parameterType="long" resultType="User">
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from user_tab
+		where u_id in (
+			select user_b as u_id
+			from message_tab
+			where user_a = #{uId}
+			and STATE <![CDATA[<>]]> 99
+			union
+			select user_a
+			from message_tab
+			where user_b = #{uId}
+			and STATE <![CDATA[<>]]> 99
+		)
+	</select>
+	<select id="findURMNByUID" resultType="int">
+		select count(1)
+		from message_tab
+		where user_a = #{param2}
+		and
+		user_b = #{param1}
+		and 
+		STATE = 0
+	</select>
+	<select id="findFriendState" resultType="int">
+		select state 
+		from friend_tab
+		where u_id = #{param2}
+		and f_atten = #{param1}
+	</select>
+	<select id="finFansNum" parameterType="long" resultType="int">
+		select count(1)
+		from friend_tab
+		where f_atten = #{uId}
+	</select>
+	<select id="findFansUser" resultType="User">
+		<![CDATA[
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from user_tab
+		where u_id in (
+			SELECT u_id FROM
+				(
+					SELECT A.*, ROWNUM RN 
+					FROM (SELECT u_id FROM friend_tab where f_atten = #{param1} and state = 0) A 
+					WHERE ROWNUM <= #{param3}
+				)
+			WHERE RN >= #{param2}
+		)
+		]]>
+	</select>
+	<select id="findHXGZ" resultType="Friend">
+		select F_id as id,
+			U_ID,
+			F_ATTEN 
+		from friend_tab
+		where
+		u_id = #{param1}
+		and
+		f_atten = #{param2}
+	</select>
+	<select id="findBlacksUser" resultType="User">
+		<![CDATA[
+		select u_id as id,u_email as email,u_nickname as nickName,u_pwd as password,u_name as name,u_sex as sex,u_position as position,u_images as images,u_sign as sign,registerTime as registerTime,pwd_question as pwdQuestion,pwd_answer as pwdAnswer,
+		lastlogin as lastLogin,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday
+		from user_tab
+		where u_id in (
+			SELECT f_atten FROM
+				(
+					SELECT A.*, ROWNUM RN 
+					FROM (SELECT f_atten FROM friend_tab 
+							where u_id = #{param1} 
+							and state = 99
+						 ) A 
+					WHERE ROWNUM <= #{param3}
+				)
+			WHERE RN >= #{param2}
+		)
+		]]>
+	</select>
+	<select id="findBlackNum" parameterType="long" resultType="int">
+		select count(1)
+		from friend_tab
+		where u_id = #{uId}
+		and state = 99
+	</select>
+</mapper>

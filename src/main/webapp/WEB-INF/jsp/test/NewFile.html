@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<HTML>
+ <HEAD>
+  <TITLE> New Document </TITLE>
+  <META NAME="Generator" CONTENT="EditPlus">
+  <META NAME="Author" CONTENT="">
+  <META NAME="Keywords" CONTENT="">
+  <META NAME="Description" CONTENT="">
+  <script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+   <script type="text/javascript" src="face.js"></script>
+ <script>
+	function show(){
+		new Face("test").show()
+	}
+	function hide(){
+		removeFace("test");
+	}
+	function submit(){
+		var v=$("#test").val();
+		v=convertImg(v);
+		$("#faces").html(v+"<br/>");
+		$("#test").val("");
+	}
+ </script>
+ </HEAD>
+
+ <BODY>
+ <div id="faces"></div>
+  <input type="text" id="test"/><input type="button" value=" show " onclick="show()"/><input type="button" value=" hide " onclick="hide()"/><input type="button" value=" submit " onclick="submit()"/>
+ </BODY>
+</HTML>
