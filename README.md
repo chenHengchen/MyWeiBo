@@ -1,5 +1,5 @@
 # MyWeiBo
-毕业设计-微博系统，符合 3NDF 的规范数据库设计，SpringMVC + Spring + Mybatis
+毕业设计-微博系统，SpringMVC + Spring + Mybatis，Oracle数据库
 
 基于B/S架构的微博系统主要用功能包括：用户登录退出、用户信息维护、微博发布、好友关注、发布提问等等。
 本系统结构如下：<br>
