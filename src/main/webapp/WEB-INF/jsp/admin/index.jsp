@@ -96,13 +96,13 @@
 						barItemName: "历史总数",
 						fillColor : "rgba(220,220,220,0.5)",
 						strokeColor : "rgba(220,220,220,1)",
-						data : ["${map.u2}","${map.w2}","${map.c2}","${map.p2}","${map.h2}"]
+						data : ["${map.u2}","${map.w2}","${map.p2}","${map.c2}","${map.h2}"]
 					},
 					{
 						barItemName: "本月新增",
 						fillColor : "rgba(151,187,205,0.5)",
 						strokeColor : "rgba(151,187,205,1)",
-						data : ["${map.u1}","${map.w1}","${map.c1}","${map.p1}","${map.h1}"]
+						data : ["${map.u1}","${map.w1}","${map.p1}","${map.c1}","${map.h1}"]
 					}
 				]
 			};		
