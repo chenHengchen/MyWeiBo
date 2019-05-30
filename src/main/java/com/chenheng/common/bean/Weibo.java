@@ -24,7 +24,16 @@ public class Weibo implements Serializable{
 	private List<WeiboComm> comm;
 	private String str_pubTime;		//加工后的date类型
 	private int state;
-	
+	private int tState;//是否为转发的微博，0代表原创微博，1代表转发微博
+
+	public int gettState() {
+		return tState;
+	}
+
+	public void settState(int tState) {
+		this.tState = tState;
+	}
+
 	public Weibo(){}
 
 	public Weibo(long id, User user, int tranum, int comnum, int colnum, int likeN, Date pubTime, String body,

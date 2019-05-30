@@ -174,7 +174,7 @@ public class IWeiboServiceImpl implements IWeiboService{
 
 	/**
 	 * 翻页
-	 * 微博状态， 0正常 1被删除 2转发
+	 * 微博状态
 	 */
 	public List<Weibo> paging(long uId, int minPage, int maxPage,String action) throws WeiboServiceException {
 		List<Weibo> list = null;
@@ -279,15 +279,15 @@ public class IWeiboServiceImpl implements IWeiboService{
 			
 			User user = userDao.findUserById(weibo.getU_id());		//微博的第一个转发者
 			User transUser = userDao.findUserById(uId);		 //要转发的用户
-			
+
+
 			transWeibo.setUser(transUser);
 			//transWeibo.setPubTime(nowDate()); 	//设置转发时间
 			transWeibo.setU_id(uId);	//转发用户
 			transWeibo.setImage(weibo.getImage());		//转发微博图片
 			transWeibo.setBody("转发<a href=\"user_index?userId="+
 					user.getId()+"\" style='text-decoration:none' \">"+"@"+user.getNickName()+"</a> "+weibo.getBody());	//用户转发微博内容
-			
-			
+			transWeibo.settState(1);//代表此微博为转发微博
 			dao.publishWeibo(transWeibo);
 			
 			//组装trans数据源

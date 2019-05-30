@@ -7,8 +7,8 @@
 			select seq_weibo.nextval from dual
 		</selectKey>
 		insert 
-		into weibo_tab(m_id,u_id,m_date,m_body,m_image)
-		values(#{id},#{user.id},SYSDATE,#{body},#{image})
+		into weibo_tab(m_id,u_id,m_date,m_body,m_image,m_t_state)
+		values(#{id},#{user.id},SYSDATE,#{body},#{image},#{tState})
 	</insert>
 	<select id="findWeiboByUserId" resultType="Weibo">
 		<![CDATA[ 
@@ -237,7 +237,10 @@
 		m_comnum as comnum,m_colnum as colnum,m_like as likeN ,to_char(m_date,'yyyy-mm-dd hh24:mi:ss') as str_pubTime FROM 
 			(
 				SELECT A.*, ROWNUM RN 
-				FROM (SELECT M_ID,U_ID,M_TRANUM,M_COMNUM,M_COLNUM,M_LIKE,M_DATE,M_BODY,M_IMAGE,M_STATE,M_TAG,M_LIKE+M_TRANUM+m_comnum+m_colnum as m FROM weibo_tab where m_state=#{param1} order by m desc) A 
+				FROM
+				(SELECT M_ID,U_ID,M_TRANUM,M_COMNUM,M_COLNUM,M_LIKE,M_DATE,M_BODY,M_IMAGE,M_STATE,M_TAG,M_LIKE+M_TRANUM+m_comnum+m_colnum as m
+				FROM weibo_tab
+				where m_state=#{param1} order by m desc)A
 				WHERE ROWNUM <= #{param3}
 			)
 		WHERE RN >= #{param2}

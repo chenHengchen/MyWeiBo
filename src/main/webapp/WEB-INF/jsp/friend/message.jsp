@@ -13,7 +13,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <link rel="stylesheet" type="text/css" href="css/global.css" />
 <link rel="stylesheet" type="text/css" href="css/friend.css" />
-<title>微博 - 别来碰我的关注</title>
+<title>微博 - ${attUsers.nickName}的私信</title>
 <link rel="stylesheet" type="text/css" href="css/chat.css" />
 <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="js/chat.js"></script>

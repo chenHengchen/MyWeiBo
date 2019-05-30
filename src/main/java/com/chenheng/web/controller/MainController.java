@@ -207,7 +207,7 @@ public class MainController {
 		}
 		User user = (User)session.getAttribute("loginUser");
 		try {
-			int num = weiboService.findHomeWeiboNum(0);	//state为0的微博数量
+			int num = weiboService.findHomeWeiboNum(0);	//state为0表示存在，state为1表示已删除
 			if(num%10 == 0){
 				page.setTotalPage(num/10);
 			}else{

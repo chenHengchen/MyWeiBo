@@ -13,8 +13,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <link rel="stylesheet" type="text/css" href="css/global.css" />
 <link rel="stylesheet" type="text/css" href="css/friend.css" />
-<title>微博 - 别来碰我的关注</title>
-
+    <title>微博 - ${logonUser.nickName}的收藏</title>
 </head>
 <body>
 <!-- header开始-->
@@ -26,24 +25,9 @@
     <td width="670" height="600" valign="top">
     <table border="0" align="center" cellpadding="5" cellspacing="0" id="guanzhu">
       <tr>
-        <td>我共收藏了 ${loginUser.attention} 篇微博</td><td align="right"></td>
+        <td>我共收藏了 ${collectNum} 篇微博</td><td align="right"></td>
       </tr>
     </table>
-    <!-- <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" id="menu">
-          <tr>
-            <td width="33%" align="center"><table width="165" border="0" align="center" cellpadding="0" cellspacing="0">
-              <tr>
-                <td align="center"><a href="friend_index">微博</a></td>
-                <td align="center"><a href="atten_index">关注</a></td>
-                <td align="center"><a href="">粉丝</a></td>
-              </tr>
-            </table></td>
-            <td width="18%" align="right">&nbsp;</td>
-            <td width="49%" align="center">&nbsp;</td>
-          </tr>
-      </table> -->
-        <!-- weibo 开始-->
-        
    	<c:forEach items="${weiboList}" var="weibo">
 		<table id="weibo" width="90%" border="0" align="center" cellpadding="3" cellspacing="0" style="background-color: #F8F8F8">
           <tr>

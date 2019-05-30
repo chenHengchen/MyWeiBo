@@ -74,7 +74,7 @@
 						label: "评论总数",
 						value : ${map.p2},
 						// value : 10,
-						color : "#E0E4CC"
+						color : "#FF8099"
 					},
 					{
 						label: "用户总数",

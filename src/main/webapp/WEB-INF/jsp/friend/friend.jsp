@@ -13,8 +13,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
 <link rel="stylesheet" type="text/css" href="css/global.css" />
 <link rel="stylesheet" type="text/css" href="css/friend.css" />
-<title>微博 - 别来碰我的关注</title>
-
+<title>微博 - ${logonUser.nickName}的好友</title>
 </head>
 <body>
 <!-- header开始-->

@@ -81,6 +81,7 @@ public class FriendController {
 			mav.addObject("tuijian", userTuiJian);
 			mav.addObject("pageBean", page);
 			mav.addObject("weiboList", list);
+			mav.addObject("logonUser",user);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

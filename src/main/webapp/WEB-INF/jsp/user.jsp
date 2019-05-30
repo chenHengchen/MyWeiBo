@@ -35,7 +35,7 @@
             <td><p><a href="#">${user.email}<br />
               </a>积分：${user.integral}<br />
             签名：${user.sign}<br />
-            <a href="#">+添加关注</a></p></td>
+            <%--<a href="#">+添加关注</a>--%></p></td>
           </tr>
         </table></td>
       </tr>

@@ -85,6 +85,7 @@ public class WeiboController {
 		try {
 			//保存微博信息
 			weibo.setUser(user);
+			weibo.settState(0);//0代表为原创微博，1代表转发微博
 			weiboService.publishWeibo(weibo);	//保存微博信息
 			user.setBlogNumber(user.getBlogNumber()+1);		//将用户的微博数+1
 			userService.updateUser(user);		//保存更改后的用户信息
@@ -120,6 +121,7 @@ public class WeiboController {
 			List<User> userTuiJian = weiboService.findUserTuiJian(user.getId());
 			mav.addObject("tuijian", userTuiJian);
 			mav.addObject("weiboList", list);
+			mav.addObject("logonUser",user);
 			session.setAttribute("action", action);
 		} catch (WeiboServiceException e) {
 			e.printStackTrace();
@@ -276,10 +278,13 @@ public class WeiboController {
 	@RequestMapping("WeiboTrans")
 	public ModelAndView WeiboTrans(HttpSession session,String weiboId,HttpServletResponse resp){
 		User user = (User)session.getAttribute("loginUser");
+
 		long wId = Long.parseLong(weiboId);
 		
 		resp.setContentType("text/html;charset=utf-8");
 		try {
+			user.setBlogNumber(user.getBlogNumber()+1);		//将用户的微博数+1
+			userService.updateUser(user);		//保存更改后的用户信息
 			PrintWriter pw = resp.getWriter();
 			int transNum = weiboService.weiboTrans(wId, user.getId());
 			pw.println("转发("+transNum+")");
@@ -433,6 +438,8 @@ public class WeiboController {
 			List<User> userTuiJian = weiboService.findUserTuiJian(user.getId());
 			mav.addObject("tuijian", userTuiJian);
 			mav.addObject("weiboList", list);
+			mav.addObject("collectNum",list.size());
+			mav.addObject("logonUser",user);
 			session.setAttribute("action", "collect");
 			
 		} catch (WeiboServiceException e) {

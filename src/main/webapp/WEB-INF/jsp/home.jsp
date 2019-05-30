@@ -31,7 +31,9 @@
 <!-- container 开始-->
 <table border="0" align="center" cellpadding="0" cellspacing="0" id="container">
   <tr>
-    <td width="670" height="600" valign="top"><form action="publishWeibo" method="post" enctype="multipart/form-data" onsubmit="return checkWeibo()"><table width="100%" border="0" cellpadding="0" cellspacing="0" id="input">
+    <td width="670" height="600" valign="top">
+        <form action="publishWeibo" method="post" enctype="multipart/form-data" onsubmit="return checkWeibo()">
+        <table width="100%" border="0" cellpadding="0" cellspacing="0" id="input">
       <tr>
         <td width="160" height="48">&nbsp;</td>
         <td width="479">&nbsp;</td>
