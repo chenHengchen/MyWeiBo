@@ -47,7 +47,7 @@
         <td align="right" valign="top"><div id="faces"></div><a href="javascript:void(0)"><image src="icon/biaoqing.png" width="47" height="22" align="absmiddle" onclick="Ashow()" /></a> 
         	悬赏积分数<select name="cNumber">
         		<option value="10">10</option>
-        		<option value="20">20</option>
+        		<%--<option value="20">20</option>
         		<option value="30">30</option>
         		<option value="40">40</option>
         		<option value="50">50</option>
@@ -55,7 +55,7 @@
         		<option value="70">70</option>
         		<option value="80">80</option>
         		<option value="90">90</option>
-        		<option value="100">100</option>
+        		<option value="100">100</option>--%>
         	</select><input type="image" src="images/btn_input.png" width="100" height="26" align="absmiddle" /></td>
         <td>&nbsp;</td>
       </tr>

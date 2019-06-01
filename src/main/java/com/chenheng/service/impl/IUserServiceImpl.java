@@ -75,6 +75,7 @@ public class IUserServiceImpl implements IUserService{
 			user.setBirthday("2019-1-1");
 			User addUser = addIntegral(user, Constant.REGISTER);		//增加用户积分
 			action = userDao.findIntegral(Constant.REGISTER);		//查找注册操作得到的PointAction
+
 			record = new PointRecord(action, addUser.getEmail(), nowDate());
 			addIntegralRecord(record);	//保存积分操作
 			userDao.saveUser(addUser); 	//保存用户注册信息
@@ -119,6 +120,20 @@ public class IUserServiceImpl implements IUserService{
 			int oldIntegral = user.getIntegral();	//获取用户之前的积分
 			int findIntegral = findIntegralByOperation(operation).getPoint();		//通过操作名称得到用户积分
 			int newIntegral = oldIntegral+findIntegral;		//用户新的积分
+			user.setIntegral(newIntegral);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
+	/**
+	 * 减少用户的普通积分
+	 */
+	public User subIntegral(User user,String operation) throws UserServiceException {
+		try {
+			int oldIntegral = user.getIntegral();	//获取用户之前的积分
+			int findIntegral = findIntegralByOperation(operation).getPoint();		//通过操作名称得到用户积分
+			int newIntegral = oldIntegral-findIntegral;		//用户新的积分
 			user.setIntegral(newIntegral);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -203,7 +218,7 @@ public class IUserServiceImpl implements IUserService{
 				Date lastLogin = findUser.getLastLogin();	//上次登录时间
 				Date now = nowDate();	//当前时间
 				if(lastLogin.getYear()!=now.getYear() || lastLogin.getMonth()!=now.getMonth() || lastLogin.getDate()!=now.getDate()){
-					//判断如果上次登录时间和这次登录时间不一样，则为用户增加登录积分
+					//判断如果上次登录时间和这次登录时间(如果是同一天登录则不会增加积分)不一样，则为用户增加登录积分
 					findUser=addIntegral(findUser, Constant.LOGIN);	//保存积分
 					saveIRecord(findUser, Constant.LOGIN);	//保存积分记录
 					findUser.setLastLogin(now);		//将上次登录时间改为当前时间
@@ -272,9 +287,17 @@ public class IUserServiceImpl implements IUserService{
 	/**
 	 * 用户发布神奇海螺模块
 	 */
-	public void publishConch(Conch conch) throws UserServiceException {
+	public void publishConch(User user,Conch conch) throws UserServiceException {
 		try {
+
 			userDao.saveConch(conch);
+			subIntegral(user,Constant.SUBMIT_Q);		//减少用户积分
+			action = userDao.findIntegral(Constant.SUBMIT_Q);		//查找操作得到的PointAction
+
+			record = new PointRecord(action, user.getEmail(), nowDate());
+			addIntegralRecord(record);	//保存积分操作
+			userDao.updateUser(user);//更新积分
+
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}

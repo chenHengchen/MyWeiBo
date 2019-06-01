@@ -36,6 +36,7 @@
             <td><p><a href="#">${loginUser.email}<br />
               </a>${loginUser.position}<a href="#">
               </a><br />
+                </a>积分：${loginUser.integral}<br />
             签名：${loginUser.sign}！<br />
             <a href="face_index">修改头像</a> | <a href="userinfo_index">修改签名</a></p></td>
           </tr>

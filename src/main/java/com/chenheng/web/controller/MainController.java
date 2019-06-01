@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.chenheng.common.bean.*;
+import com.chenheng.common.util.Constant;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.chenheng.common.bean.Conch;
-import com.chenheng.common.bean.User;
-import com.chenheng.common.bean.Weibo;
-import com.chenheng.common.bean.WeiboComm;
 import com.chenheng.common.exception.UserServiceException;
 import com.chenheng.common.exception.WeiboServiceException;
 import com.chenheng.common.util.CommPage;
@@ -75,7 +73,7 @@ public class MainController {
 				user.setImages("face/boy.png");
 			}else if(user.getSex().equals("0")){
 				//用户性别为女时
-				user.setImages("face/gril.png");
+				user.setImages("face/girl.jpg");
 			}
 			userService.register(user);
 			mav.setViewName("register");
@@ -167,6 +165,7 @@ public class MainController {
 		mav.clear();
 		try {
 			User loginUser = userService.login(userid, password);
+
 			session.setAttribute("loginUser", loginUser);		//将登录用户信息保存在session中
 			
 			List<User> userTuiJian = weiboService.findUserTuiJian(loginUser.getId());
@@ -485,7 +484,7 @@ public class MainController {
 		conch.setUserId(user.getId());
 		
 		try {
-			userService.publishConch(conch);
+			userService.publishConch(user ,conch);
 			mav.addObject("msg", "发布成功！");
 			
 			//海螺分页
@@ -507,6 +506,7 @@ public class MainController {
 			mav.addObject("tuijian", userTuiJian);
 			mav.addObject("conch", map);
 			mav.addObject("pageBean", page);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

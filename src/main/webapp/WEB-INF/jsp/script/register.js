@@ -5,7 +5,9 @@ function checkemail(){
 	var msg = document.getElementById("email").value;
 	//邮箱格式验证
 	var emailmsg = document.getElementById("emailmsg");
-	if(email.value.indexOf("@")==-1){
+	//对电子邮件的验证
+	var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+	if(!myreg.test(email.value)){
 		emailmsg.innerHTML = "<img src='icon/err.png' align='absmiddle'> <font color='red'>邮箱格式错误</font>";
 	}else{
 		emailmsg.innerHTML = "<img src='icon/ok.png' align='absmiddle'> ";

@@ -54,7 +54,7 @@ public interface IUserService {
 	Map<String, Object> alerts(long uId) throws UserServiceException;
 	
 	//用户发布神奇海螺
-	void publishConch(Conch conch) throws UserServiceException;
+	void publishConch(User user,Conch conch) throws UserServiceException;
 	
 	//海螺首页      
 	Map<String, Object> conchIndex(long uId, String operation, PageBean page) throws UserServiceException;
