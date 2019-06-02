@@ -1,5 +1,6 @@
 package com.chenheng.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,7 +232,10 @@ public class IAdminServiceImpl implements IAdminService{
 			list = adminDao.findWeiboByKey(nkey, pageBean.getMinPage(), pageBean.getMaxPage());
 			list = FaceFormat.formt(list);
 			for(int i=0;i<list.size();i++){
-				list.get(i).setStr_pubTime(TimeFormat.timeFormat(list.get(i).getPubTime()));
+//				list.get(i).setStr_pubTime(TimeFormat.timeFormat(list.get(i).getPubTime()));
+
+//				String dateStr = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(list.get(i).getPubTime());
+//				list.get(i).setStr_pubTime(list.get(i).getPubTime().toLocaleString());
 				list.get(i).setUser(userDao.findUserById(list.get(i).getU_id()));
 				if(key != null){
 					list.get(i).setBody(FaceFormat.keyFormt(list.get(i).getBody(), key));

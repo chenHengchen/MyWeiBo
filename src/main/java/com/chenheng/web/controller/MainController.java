@@ -529,6 +529,7 @@ public class MainController {
 			List<User> userTuiJian = weiboService.findUserTuiJian(user.getId());
 			mav.addObject("tuijian", userTuiJian);
 			mav.addObject("detailMap", map);
+			mav.addObject("loginUser",user);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -557,16 +558,24 @@ public class MainController {
 	 * @return
 	 */
 	@RequestMapping("adoptComm")
-	public ModelAndView adoptComm(long conchId,long comm){
+	public ModelAndView adoptComm(long conchId,long comm,HttpSession session){
 		mav.clear();
 		mav.setViewName("redirect:conchDetail");
-		try {
-			userService.adoptComm(conchId, comm);
-		} catch (UserServiceException e) {
-			e.printStackTrace();
-		}
-		mav.addObject("conchId", conchId);
-		return mav;
+		User user = (User) session.getAttribute("loginUser");
+
+		/*Long conch_userId = userService.selectUserIdByConchId(conchId);
+		if(!conch_userId.equals(user.getId())){
+			mav.addObject("msg", "由于您不是问题提出者，故不可以采纳此答案！");
+			return mav;
+		}else{*/
+			try {
+				userService.adoptComm(conchId, comm);
+			} catch (UserServiceException e) {
+				e.printStackTrace();
+			}
+			mav.addObject("conchId", conchId);
+			return mav;
+
 	}
 	
 	/**

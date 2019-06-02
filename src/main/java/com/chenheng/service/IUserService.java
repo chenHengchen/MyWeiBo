@@ -70,6 +70,9 @@ public interface IUserService {
 	
 	//采纳海螺答案
 	void adoptComm(long conchId, long commId) throws UserServiceException;
+
+	//根据海螺id查找发布问题的作者
+	Long selectUserIdByConchId(Long conchId)throws UserServiceException;
 	
 	//搜索功能
 	Map<String, Object> seachWeiboAndUser(String key, int page, String ac) throws UserServiceException;

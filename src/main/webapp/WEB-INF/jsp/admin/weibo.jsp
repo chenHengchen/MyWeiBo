@@ -47,7 +47,7 @@
 				<td>${weibo.id}</td>
 				<td>${weibo.user.nickName}</td>
 				<td>${weibo.body}</td>
-				<td>${weibo.str_pubTime}</td>
+				<td>${weibo.pubTime}</td>
 				<td>
 					<c:if test="${weibo.state == 0}">正常</c:if>
 					<c:if test="${weibo.state == 1}">被删除</c:if>

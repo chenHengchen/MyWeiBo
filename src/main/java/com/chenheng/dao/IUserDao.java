@@ -9,6 +9,7 @@ import com.chenheng.common.bean.PointRecord;
 import com.chenheng.common.bean.User;
 import com.chenheng.common.bean.WeiboComm;
 import com.chenheng.common.exception.DataAccessException;
+import com.chenheng.common.exception.UserServiceException;
 
 public interface IUserDao {
 	
@@ -62,6 +63,7 @@ public interface IUserDao {
 	
 	//通过海螺id查找海螺
 	Conch findConchById(long conchId)throws DataAccessException;
+
 	
 	//设置海螺状态为1
 	void setConchState(long conchId)throws DataAccessException;

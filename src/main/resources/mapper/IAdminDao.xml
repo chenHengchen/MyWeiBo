@@ -60,7 +60,7 @@
 		to_char(lastlogin,'yyyy-mm-dd hh24:mi:ss') as pwdAnswer,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday,u_state as state,to_char(ban_time,'yyyy-mm-dd hh24:hh') as banTime FROM 
 			(
 				SELECT A.*, ROWNUM RN 
-				FROM (SELECT * FROM user_tab) A 
+				FROM (SELECT * FROM user_tab order by u_id desc) A
 				WHERE ROWNUM <= #{param2}
 			)
 		WHERE RN >= #{param1}
@@ -82,7 +82,7 @@
 		to_char(lastlogin,'yyyy-mm-dd hh24:mi:ss') as pwdAnswer,integral,conch_integral as conchIntegral,A_number as attention,F_number as fans,co_number as collect,blog_number as blogNumber, u_birthday as birthday,u_state as state,to_char(ban_time,'yyyy-mm-dd hh24:hh') as banTime FROM 
 			(
 				SELECT A.*, ROWNUM RN 
-				FROM (SELECT * FROM user_tab where u_nickname like '%${param1}%') A 
+				FROM (SELECT * FROM user_tab where u_nickname like '%${param1}%' order by u_id desc) A
 				WHERE ROWNUM <= #{param3}
 			)
 		WHERE RN >= #{param2}
@@ -131,7 +131,7 @@
 		 FROM 
 			(
 				SELECT A.*, ROWNUM RN 
-				FROM (SELECT * FROM conch_tab where ${param1} ORDER BY conchTime DESC) A 
+				FROM (SELECT * FROM conch_tab where ${param1} ORDER BY id DESC) A
 				WHERE ROWNUM <![CDATA[<=]]> #{param3}
 			)
 		WHERE RN <![CDATA[>=]]> #{param2}

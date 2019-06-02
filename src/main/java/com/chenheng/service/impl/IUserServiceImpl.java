@@ -385,6 +385,7 @@ public class IUserServiceImpl implements IUserService{
 	 */
 	public void adoptComm(long conchId, long commId) throws UserServiceException {
 		try {
+
 			//设置海螺状态为1
 			userDao.setConchState(conchId);
 			//设置海螺评论状态为101
@@ -392,12 +393,24 @@ public class IUserServiceImpl implements IUserService{
 			//为用户增加海螺积分
 			Conch conch = userDao.findConchById(conchId);
 			User user = userDao.findUserById(userDao.findUserIdByCommId(commId));
-			user.setConchIntegral(user.getConchIntegral()+conch.getcNumber());
-			
+//			user.setConchIntegral(user.getConchIntegral()+conch.getcNumber());
+			user.setIntegral(user.getIntegral()+conch.getcNumber());
+			userDao.updateUser(user);
 			
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 		}
+	}
+	//根据海螺id查找发布问题的作者
+	@Override
+	public Long selectUserIdByConchId(Long conchId)throws UserServiceException{
+		long userId = 0;
+		try{
+			userId = userDao.findConchById(conchId).getUserId();
+		}catch (DataAccessException e){
+			e.printStackTrace();
+		}
+		return userId;
 	}
 
 	@Override
